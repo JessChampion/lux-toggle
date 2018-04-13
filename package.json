@@ -31,7 +31,8 @@
     "lint:js": "eslint src/**/*.js tests/**/*.test.js --ignore-pattern tests/coverage/*",
     "lint:style": "stylelint \"demo/scss/**/*.scss\"",
     "test": "jest",
-    "test:coverage": "yarn test:jest --coverage"
+    "test:coverage": "yarn test:jest --coverage",
+    "deploy": "git subtree push --prefix dist/demo origin gh-pages"
   },
   "browserslist": [
     "> 1%",
