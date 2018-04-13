@@ -1,8 +1,8 @@
 /* global describe, expect, it, jest, beforeAll, afterAll */
 /* eslint-disable react/no-unknown-property */
 
-import { click, hasClass, keyPress } from './_utils';
-import initToggles, { config, CLOSE_MODE, KEYS } from '../../components/toggle';
+import { mouseUp, hasClass, keyPress } from './_utils';
+import initToggles, { config, CLOSE_MODE, KEYS } from '../src/lux-toggle';
 
 const createToggles = options => (targetId, index) => {
   const groupAttr = options.groupName ? `${config.attributes.group}="${options.groupName}"` : '';
@@ -115,7 +115,7 @@ describe('toggle', () => {
       assertClosed(toggle);
       assertClosed(target);
 
-      click(toggle);
+      mouseUp(toggle);
 
       assertOpening(toggle);
       assertOpening(target);
@@ -125,7 +125,7 @@ describe('toggle', () => {
       assertOpen(toggle);
       assertOpen(target);
 
-      click(toggle);
+      mouseUp(toggle);
 
       assertClosing(toggle);
       assertClosing(target);
@@ -156,12 +156,12 @@ describe('toggle', () => {
 
       expect(toggle.getAttribute('aria-expanded')).toBe('false');
 
-      click(toggle);
+      mouseUp(toggle);
       jest.runAllTimers();
 
       expect(toggle.getAttribute('aria-expanded')).toBe('true');
 
-      click(toggle);
+      mouseUp(toggle);
       jest.runAllTimers();
 
       expect(toggle.getAttribute('aria-expanded')).toBe('false');
@@ -175,13 +175,13 @@ describe('toggle', () => {
       assertClosed(toggle);
       assertClosed(target);
 
-      click(toggle);
+      mouseUp(toggle);
       jest.runAllTimers();
 
       assertOpen(toggle);
       assertOpen(target);
 
-      click(target); // click inside target
+      mouseUp(target); // mouseUp inside target
       jest.runAllTimers();
 
       assertOpen(toggle);
@@ -192,7 +192,7 @@ describe('toggle', () => {
       const targetId = 'target1';
       const toggle = setup([targetId]).pop();
       const target = document.getElementById(targetId);
-      click(toggle);
+      mouseUp(toggle);
       jest.runAllTimers();
 
       assertOpen(toggle);
@@ -216,7 +216,7 @@ describe('toggle', () => {
       assertClosed(toggle);
       assertClosed(target);
 
-      click(toggle);
+      mouseUp(toggle);
 
       assertOpening(toggle);
       assertOpening(target);
@@ -226,7 +226,7 @@ describe('toggle', () => {
       assertOpen(toggle);
       assertOpen(target);
 
-      click(closeButton);
+      mouseUp(closeButton);
 
       assertClosing(toggle);
       assertClosing(target);
@@ -256,13 +256,13 @@ describe('toggle', () => {
         const toggle = setup([targetId]).pop();
         const target = document.getElementById(targetId);
 
-        click(toggle);
+        mouseUp(toggle);
         jest.runAllTimers();
 
         assertOpen(toggle);
         assertOpen(target);
 
-        click(document.body); // click outside
+        mouseUp(document.body); // click outside
         jest.runAllTimers();
 
         assertOpen(toggle);
@@ -277,7 +277,7 @@ describe('toggle', () => {
         assertClosed(toggles[0]);
         assertClosed(toggles[1]);
 
-        click(toggles[0]);
+        mouseUp(toggles[0]);
         jest.runAllTimers();
 
         assertOpen(toggles[0]);
@@ -285,7 +285,7 @@ describe('toggle', () => {
         assertClosed(toggles[1]);
         assertClosed(targets[1]);
 
-        click(toggles[1]);
+        mouseUp(toggles[1]);
         jest.runAllTimers();
 
         assertOpen(toggles[0]);
@@ -293,7 +293,7 @@ describe('toggle', () => {
         assertOpen(toggles[1]);
         assertOpen(targets[1]);
 
-        click(toggles[0]);
+        mouseUp(toggles[0]);
         jest.runAllTimers();
 
         assertClosed(toggles[0]);
@@ -312,7 +312,7 @@ describe('toggle', () => {
         assertClosed(toggles[0]);
         assertClosed(toggles[1]);
 
-        click(toggles[0]);
+        mouseUp(toggles[0]);
         jest.runAllTimers();
 
         assertOpen(toggles[0]);
@@ -320,7 +320,7 @@ describe('toggle', () => {
         assertClosed(toggles[1]);
         assertClosed(targets[1]);
 
-        click(toggles[1]);
+        mouseUp(toggles[1]);
         jest.advanceTimersByTime(config.animations.siblingOpenDelay / 2);
 
         assertClosing(toggles[0]);
@@ -350,13 +350,13 @@ describe('toggle', () => {
         const toggle = setup([targetId], { mode: CLOSE_MODE.outside }).pop();
         const target = document.getElementById(targetId);
 
-        click(toggle);
+        mouseUp(toggle);
         jest.runAllTimers();
 
         assertOpen(toggle);
         assertOpen(target);
 
-        click(document.body); // click outside
+        mouseUp(document.body); // click outside
         jest.runAllTimers();
 
         assertClosed(toggle);
