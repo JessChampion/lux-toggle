@@ -35,7 +35,7 @@ Three other attributes can be optionally added to the toggle element to add extr
 CiteThis can be installed from NPM `yarn add lux-toggle` - TODO
 
 ### Usage
-include 'lux-toggle.js' in your html document
+include 'lux-lux-toggle.js' in your html document
 `<script type=text/javascript src=../cite-this.js></script>`
 or import into your package javascript 
 `import toggle from 'lux-toggle';` 
@@ -109,3 +109,4 @@ Test coverage can be reported by running `yarn test:coverage`
 - Usage documentation
 - Demo
 - Make config actually configurable
+- Publish

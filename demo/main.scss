@@ -1,0 +1,198 @@
+// __ VARIABLES __
+// -- colors --
+$color-background: #231123;
+$color-background-light: #2D2327;
+
+$color-primary-dark: #A62754; // darken 15%
+$color-primary: #D44678;
+$color-primary-light: #E284A5; // lighten 15%
+
+$color-text: #FAECF1;
+
+// -- sizes --
+$size-gutter: 1rem;
+
+$size-container-max: 45rem;
+
+// -- borders --
+$border-width: 0.1rem;
+$border-standard: $border-width solid $color-text;
+
+// __ FUNCTIONS AND MIXINS
+@function minus-padding($value, $padding) {
+  @return calc(#{$value} - #{$padding * 2});
+}
+
+@mixin breakpoint-lg-up {
+  @media all and (min-width: $size-container-max) {
+    @content;
+  }
+}
+
+@mixin contain {
+  margin: 0 auto;
+  max-width: $size-container-max;
+  width: minus-padding(100%, $size-gutter);
+}
+
+// __ STYLES __
+body {
+  background: $color-background;
+  color: $color-text;
+  font-family: 'Dosis', 'Open Sans', sans-serif;
+  font-weight: 400;
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.demo {
+  @include contain;
+
+  min-height: minus-padding(100%, $size-gutter);
+  padding: $size-gutter;
+
+  &__header {
+    margin-bottom: 10vw;
+
+    @include breakpoint-lg-up {
+      margin-bottom: 5rem;
+    }
+  }
+
+  &__title {
+    color: $color-primary;
+    font-family: 'Allerta Stencil', 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 15vw;
+    font-weight: normal;
+    line-height: 1;
+    margin: 1rem 0 4vw;
+    text-align: center;
+
+    @include breakpoint-lg-up {
+      font-size: 7.4rem;
+      margin-bottom: 2rem;
+    }
+  }
+
+  &__subtitle {
+    color: $color-primary-light;
+    font-size: 5vw;
+    font-weight: normal;
+    line-height: 1;
+    letter-spacing: 0.25vw;
+    position: relative;
+    text-align: center;
+    text-transform: uppercase;
+
+    @include breakpoint-lg-up {
+      font-size: 2.25rem;
+      letter-spacing: 0.25rem;
+    }
+
+    &::after {
+      border-bottom: 0.15rem solid $color-text;
+      content: '';
+      height: 1vw;
+      left: 7.5vw;
+      position: absolute;
+      bottom: -6vw;
+      width: minus-padding(100%, 7.5vw);
+
+      @include breakpoint-lg-up {
+        bottom: -2.75rem;
+        border-bottom: $border-standard;
+        height: 0.1rem;
+        left: 2.5rem;
+        width: minus-padding(100%, 2.5rem);
+      }
+    }
+  }
+
+  &__github {
+    background: url('./mark-github.svg');
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    background-position: center top;
+    display: inline-block;
+    height: 5vw;
+    margin-left: 0.75vw;
+    position: relative;
+    top: 0.5vw;
+    width: 5vw;
+
+    @include breakpoint-lg-up {
+      height: 2rem;
+      margin-left: 0.25rem;
+      top: 0.1rem;
+      width: 2rem;
+    }
+  }
+}
+
+.example {
+  @include contain;
+
+  padding: 2vw 5.5vw;
+  width: minus-padding(100%, 5.5vw);
+
+  @include breakpoint-lg-up {
+    padding: $size-gutter #{$size-gutter * 2};
+  }
+
+  &__heading {
+    font-weight: 300;
+    letter-spacing: 0.1rem;
+  }
+
+  &__content {
+    font-weight: 300;
+    letter-spacing: 0.05rem;
+    line-height: 1.15;
+    padding: 1rem 0;
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.toggle {
+  &__button {
+    border: $border-standard;
+    border-radius: 1rem;
+    cursor: pointer;
+    margin: 0 auto;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  &__content {
+    display: none;
+
+    &.toggle--open {
+      display: block;
+    }
+
+    .btn {
+      border: $border-standard;
+      border-radius: 1rem;
+      cursor: pointer;
+      display: inline-block;
+      padding: 0.5rem;
+      margin: 0.5rem;
+      text-align: center;
+    }
+  }
+
+  &__group {
+    display: flex;
+    justify-content: space-between;
+
+    .toggle__button {
+      flex-basis: 25%;
+      margin: 0;
+    }
+  }
+}
