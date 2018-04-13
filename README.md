@@ -1,5 +1,5 @@
 # LUX TOGGLE
-Demo
+Demo: https://jesschampion.github.io/lux-toggle/
 
 A utility for creating toggleable items with JavaScript. 
 Inspired by bootstrap's toggle utility. Implemented in vanillaJS in a functional style.
@@ -32,15 +32,19 @@ Three other attributes can be optionally added to the toggle element to add extr
  
 ## Installation & Usage
 ### Installation
-CiteThis can be installed from NPM `yarn add lux-toggle` - TODO
+lux-toggle can be installed from NPM `yarn add lux-toggle`
 
 ### Usage
-include 'lux-lux-toggle.js' in your html document
-`<script type=text/javascript src=../cite-this.js></script>`
-or import into your package javascript 
-`import toggle from 'lux-toggle';` 
+Import into your main javascript package
+ 
+```
+import luxToggle from '../src/lux-toggle';
+   
+luxToggle();
+``` 
 
 Define toggles and targets in your html using the given data attributes
+
 ```
 <span data-lux-toggle="myTarget"
       data-lux-toggle-close="closeButton"
@@ -76,7 +80,7 @@ or
 #### Running locally
 1. Build by running
   `yarn build` or`yarn watch`
-2. Open `cite-this/dist/demo/index.html` in a browser
+2. Open `lux-toggle/dist/demo/index.html` in a browser
 
 #### Demo build
 1. Build
@@ -106,7 +110,16 @@ The specs are located in `/test` and can be run with `yarn test`
 Test coverage can be reported by running `yarn test:coverage`
 
 ### Enhancement Backlog
-- Usage documentation
-- Demo
+MVP:
+----
+- ~~Demo~~
+- ~~Usage documentation~~
+- ~~Publish~~
+
+Extensions:
+-----------
 - Make config actually configurable
-- Publish
+
+Bug:
+---- 
+- Click outside close not triggered if you click another toggle
