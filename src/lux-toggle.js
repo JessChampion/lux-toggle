@@ -238,7 +238,6 @@ const mountToggle = (element, target, closeArea = null) => {
       target.open();
 
       // bind close events
-      console.log(closeMode);
       if (closeMode !== CLOSE_MODE.manual) {
         attachListeners(document.body, this.clickOutsideHandler);
       }
@@ -268,7 +267,6 @@ const mountToggle = (element, target, closeArea = null) => {
         return;
       }
       if (closeMode === CLOSE_MODE.group && hasActiveSiblingsToggles(groupName)) {
-        console.log('here');
         // apply opening classes to toggle straight away so it looks like somethings happening
         element.classList.add(config.classes.opening);
         click(element.parentElement);

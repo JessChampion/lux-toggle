@@ -1,11 +1,12 @@
 // __ VARIABLES __
 // -- colors --
 $color-background: #231123;
-$color-background-light: #2D2327;
 
 $color-primary-dark: #A62754; // darken 15%
 $color-primary: #D44678;
 $color-primary-light: #E284A5; // lighten 15%
+
+$color-accent: #D44678;
 
 $color-text: #FAECF1;
 
@@ -17,6 +18,12 @@ $size-container-max: 45rem;
 // -- borders --
 $border-width: 0.1rem;
 $border-standard: $border-width solid $color-text;
+
+// -- borders --
+$transition-color: color 250ms ease-in-out;
+$transition-fade: opacity 150ms linear 75ms;
+$transition-expand: max-height 300ms ease-in-out;
+$transition-slide: transform 300ms ease-in-out;
 
 // __ FUNCTIONS AND MIXINS
 @function minus-padding($value, $padding) {
@@ -166,23 +173,101 @@ body {
     margin: 0 auto;
     padding: 1rem;
     text-align: center;
+    transition: $transition-color;
+    will-change: border-color, color;
+
+    &.toggle--open {
+      color: $color-primary-light;
+    }
+
+    &:hover {
+      color: $color-primary;
+      border-color: $color-primary-light;
+    }
+
+    &:active, &:focus {
+      outline: none;
+      box-shadow: 0 0 0.5rem 0.5rem -webkit-focus-ring-color;
+    }
   }
 
   &__content {
     display: none;
+    overflow: hidden;
 
-    &.toggle--open {
-      display: block;
+    &.toggle {
+      &--open,
+      &--opening,
+      &--closing {
+        display: block;
+      }
+    }
+
+    &--appear {
+      transition: $transition-expand, $transition-fade;
+      will-change: max-height, opacity;
+      opacity: 0;
+      max-height: 0;
+
+      &.toggle {
+        &--open,
+        &--opening,
+        &--closing {
+          display: block;
+        }
+
+        &--closing {
+          z-index: 9;
+        }
+
+        &--open {
+          max-height: 60rem;
+          opacity: 1;
+          z-index: 10;
+
+          .container {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    &--slide {
+      transition: $transition-slide;
+      transform: translate3d(0, -100%, 0);
+      will-change: transform;
+
+      &.toggle {
+        &--closing {
+          z-index: 0;
+        }
+
+        &--open {
+          transform: translate3d(0, 0, 0);
+          z-index: 10;
+
+          .container {
+            opacity: 1;
+          }
+        }
+      }
     }
 
     .btn {
       border: $border-standard;
       border-radius: 1rem;
+      color: $color-primary-light;
       cursor: pointer;
       display: inline-block;
+      font-weight: 600;
       padding: 0.5rem;
       margin: 0.5rem;
       text-align: center;
+
+      &:hover {
+        color: $color-primary;
+        border-color: $color-primary-light;
+      }
     }
   }
 
@@ -194,5 +279,10 @@ body {
       flex-basis: 25%;
       margin: 0;
     }
+  }
+
+  &__wrap {
+    overflow: hidden;
+    height: auto;
   }
 }
