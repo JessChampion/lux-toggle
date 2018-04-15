@@ -13,6 +13,7 @@ $color-text: #FAECF1;
 // -- sizes --
 $size-gutter: 1rem;
 
+$size-container-small: 25rem;
 $size-container-max: 45rem;
 
 // -- borders --
@@ -28,6 +29,12 @@ $transition-slide: transform 300ms ease-in-out;
 // __ FUNCTIONS AND MIXINS
 @function minus-padding($value, $padding) {
   @return calc(#{$value} - #{$padding * 2});
+}
+
+@mixin breakpoint-sm-up {
+  @media all and (min-width: $size-container-small) {
+    @content;
+  }
 }
 
 @mixin breakpoint-lg-up {
@@ -170,11 +177,16 @@ body {
     border: $border-standard;
     border-radius: 1rem;
     cursor: pointer;
+    font-size: 0.9rem;
     margin: 0 auto;
     padding: 1rem;
     text-align: center;
     transition: $transition-color;
     will-change: border-color, color;
+
+    @include breakpoint-sm-up {
+      font-size: 1rem;
+    }
 
     &.toggle--open {
       color: $color-primary-light;
@@ -278,6 +290,7 @@ body {
     .toggle__button {
       flex-basis: 25%;
       margin: 0;
+      padding: 1rem 0.5rem;
     }
   }
 
