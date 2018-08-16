@@ -16,7 +16,7 @@ const SRC = {
 
 const DEST = {
   js: destPath,
-  demo: 'dist/demo/'
+  demo: destPath + 'demo/'
 };
 
 mix.setPublicPath(__dirname);
@@ -30,7 +30,7 @@ mix.js(SRC.js, DEST.js);
 mix.js(SRC.demo.main, DEST.demo);
 mix.sass(SRC.demo.styles, DEST.demo);
 
-mix.copy(SRC.demo.index, DEST.demo);
+mix.copy(SRC.js, DEST.js);
 
 // Custom webpack config
 if (mix.inProduction()) {

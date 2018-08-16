@@ -1,7 +1,7 @@
 # LUX TOGGLE
 Demo: https://jesschampion.github.io/lux-toggle/
 
-A utility for creating toggleable items with JavaScript. 
+A utility for creating toggleable dom elements with JavaScript. 
 Inspired by bootstrap's toggle utility. Implemented in vanillaJS in a functional style.
 The utility has baked in animation and accessibility support.
 
@@ -16,7 +16,7 @@ CSS will need to be coded to define the display state, as the script only modifi
  
 Any clicks outside the toggle button or target will cause the target to close automatically.
  
-Three other attributes can be optionally added to the toggle element to add extra functionality.
+Three other optional attributes can be added to the toggle element to customise its behaviour.
 
 -   `data-lux-toggle-group` can be set with a string representing the group name.
     Whenever a toggle in a group is opened it will check if there are other siblings open in the group,
@@ -25,7 +25,7 @@ Three other attributes can be optionally added to the toggle element to add extr
 -   `data-lux-toggle-close` set the value to the ID of any element inside the toggle target.
      The element will function as a close button.
      
--   `data-lux-toggle-mode` configure the behaviour of the toggle around closing. Options:  
+-   `data-lux-toggle-mode` configure the closing behaviour of the toggle section. Options:  
     -   **manual**:   close only when clicking toggle, by keyboard or close area. (DEFAULT)
     -   **group**:    close siblings when another in the same group is opened.
     -   **outside**:  always close on click outside
@@ -38,12 +38,12 @@ lux-toggle can be installed from NPM `yarn add lux-toggle`
 Import into your main javascript package
  
 ```
-import luxToggle from '../src/lux-toggle';
+import luxToggle from 'lux-toggle';
    
 luxToggle();
 ``` 
 
-Define toggles and targets in your html using the given data attributes
+Define toggles and targets in html using the given data attributes
 
 ```
 <span data-lux-toggle="myTarget"
