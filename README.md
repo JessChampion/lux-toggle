@@ -2,8 +2,8 @@
 Demo: https://jesschampion.github.io/lux-toggle/
 
 A utility for creating toggleable dom elements with JavaScript. 
-Inspired by bootstrap's toggle utility. Implemented in vanillaJS in a functional style.
-The utility has baked in animation and accessibility support.
+Inspired by bootstrap's toggle utility but without the overhead. Implemented in vanillaJS in a functional style.
+The utility has baked in animation and accessibility support/
 
 Set the toggle button by adding the attribute `data-lux-toggle`, with the value being the ID of the element to be toggled.  
         
@@ -29,6 +29,10 @@ Three other optional attributes can be added to the toggle element to customise 
     -   **manual**:   close only when clicking toggle, by keyboard or close area. (DEFAULT)
     -   **group**:    close siblings when another in the same group is opened.
     -   **outside**:  always close on click outside
+
+Accessibility support includes:
+    -   Keyboard navigation
+    -   Automatic application of aria-expanded and aria-controls tags to target and toggles.
  
 ## Installation & Usage
 ### Installation
@@ -109,16 +113,5 @@ The specs are located in `/test` and can be run with `yarn test`
 Test coverage can be reported by running `yarn test:coverage`
 
 ### Enhancement Backlog
-MVP:
-----
-- ~~Demo~~
-- ~~Usage documentation~~
-- ~~Publish~~
-
-Extensions:
------------
-- Make config actually configurable
-
-Bug:
----- 
-- Click outside close not triggered if you click another toggle
+- Automatically add tab-index to toggle if needed.
+- Make config actually configurable 
