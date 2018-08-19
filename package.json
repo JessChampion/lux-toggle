@@ -1,6 +1,6 @@
 {
   "name": "lux-toggle",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A utility for creating toggleable items with JavaScript. Inspired by bootstrap's toggle utility. Implemented in vanillaJS in a functional style.",
   "main": "dist/lux-toggle.js",
   "repository": "git@github.com:JessChampion/lux-toggle.git",
@@ -33,7 +33,7 @@
     "lint:style": "stylelint \"demo/scss/**/*.scss\"",
     "test": "jest",
     "test:coverage": "yarn test --coverage",
-    "deploy": "git subtree push --prefix dist/demo origin gh-pages"
+    "deploy-demo": "git subtree push --prefix dist/demo origin gh-pages"
   },
   "browserslist": [
     "> 1%",

@@ -88,7 +88,7 @@ or
 2. Commit changes
   `git commit -am"V X.Y.Z"`
 3. Push to gh-pages branch
-  `yarn deploy:demo`
+  `yarn deploy-demo`
 4. Update version number in `package.json` and push to master
 
 #### Production build
