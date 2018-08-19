@@ -4,32 +4,35 @@
 import { mouseUp, hasClass, keyPress } from './_utils';
 import initToggles, { config, CLOSE_MODE, KEYS } from '../src/lux-toggle';
 
-const createToggles = options => (targetId, index) => {
-  const groupAttr = options.groupName ? `${config.attributes.group}="${options.groupName}"` : '';
-  const closeAttr = options.withCloseButtons || options.withBrokenCloseButtons ? `${config.attributes.close}="close-${targetId}"` : '';
-  const closeModeAttr = options.mode ? `${config.attributes.mode}="${options.mode}"` : '';
-  return `<span ${config.attributes.target}="${targetId}" ${groupAttr} ${closeAttr} ${closeModeAttr}>toggle ${index}</span>`;
+const createToggles = (targetId, options) => {
+  const groupAttr = options.groupName ? `${config.attr.toggleGroup}="${options.groupName}"` : '';
+  const closeAttr = options.withCloseButtons || options.withBrokenCloseButtons ? `${config.attr.closeButton}="close-${targetId}"` : '';
+  const closeModeAttr = options.mode ? `${config.attr.closeMode}="${options.mode}"` : '';
+  return `<span ${config.attr.target}="${targetId}" ${groupAttr} ${closeAttr} ${closeModeAttr}>toggle</span>`;
 };
 
-const createTarget = options => (targetId, index) => {
+const createTarget = (targetId, options) => {
   if (options.noTarget) {
     return '';
   }
   const closebtn = options.withCloseButtons ? `<div id="close-${targetId}">X</div>` : '';
-  return `<div id="${targetId}">target ${index} ${closebtn}</div>`;
+  return `<div id="${targetId}">target ${closebtn}</div>`;
 };
 
-const createTestDom = (targetIds, options) => ([
+const createTestDom = (targetId, options = {}) => ([
   '<div>',
-  `<div>${targetIds.map(createToggles(options)).join('')}</div>`,
-  `<div>${targetIds.map(createTarget(options)).join('')}</div>`,
+  `<div>${createToggles(targetId, options)}</div>`,
+  `<div>${createTarget(targetId, options)}</div>`,
   '</div>'
 ]).join('');
 
-const getToggles = () => Array.from(document.querySelectorAll(`[${config.attributes.target}]`));
+const getToggles = () => Array.from(document.querySelectorAll(`[${config.attr.target}]`));
 
-const setup = (targetIds, options = {}) => {
-  document.documentElement.innerHTML = createTestDom(targetIds, options);
+const getToggleWithTargetId = targetId => Array.from(document.querySelectorAll(`[${config.attr.target}='${targetId}']`));
+
+const setup = (targetsConfig) => {
+  const targets = targetsConfig.map(targetConfig => createTestDom(...targetConfig));
+  document.documentElement.innerHTML = targets.join('');
   initToggles();
   return getToggles();
 };
@@ -71,7 +74,7 @@ describe('toggle', () => {
   describe('initialisation', () => {
     it('initialises the toggle', () => {
       const targetId = 'target1';
-      const toggles = setup([targetId]);
+      const toggles = setup([[targetId]]);
       expect(toggles).toHaveLength(1);
       toggles.forEach((toggleElement) => {
         expect(toggleElement.hasAttribute('aria-expanded')).toBeTruthy();
@@ -87,17 +90,17 @@ describe('toggle', () => {
 
       expect(toggles).toHaveLength(0);
 
-      document.documentElement.innerHTML = createTestDom([targetId], {});
+      document.documentElement.innerHTML = createTestDom(targetId, {});
       toggles = getToggles();
 
       expect(toggles).toHaveLength(1);
     });
 
     it('throws an error if a target cannot be found for the specified target ID', () => {
-      const targetId = ['target1'];
+      const targetId = 'target1';
       let error = null;
       try {
-        setup([targetId], { noTarget: true });
+        setup([[targetId, { noTarget: true }]]);
       } catch (e) {
         error = e;
       }
@@ -109,7 +112,7 @@ describe('toggle', () => {
   describe('toggling', () => {
     it('toggle opens and closes by applying appropriate classes', () => {
       const targetId = 'target1';
-      const toggle = setup([targetId]).pop();
+      const toggle = setup([[targetId]]).pop();
       const target = document.getElementById(targetId);
 
       assertClosed(toggle);
@@ -136,7 +139,7 @@ describe('toggle', () => {
     });
 
     it('can be navigated by keyboard', () => {
-      const toggle = setup(['target1']).pop();
+      const toggle = setup([['target1']]).pop();
 
       assertClosed(toggle);
 
@@ -169,7 +172,7 @@ describe('toggle', () => {
 
     it('stays open when clicked inside the target', () => {
       const targetId = 'target1';
-      const toggle = setup([targetId]).pop();
+      const toggle = setup([[targetId]]).pop();
       const target = document.getElementById(targetId);
 
       assertClosed(toggle);
@@ -190,7 +193,7 @@ describe('toggle', () => {
 
     it('toggle closes when escape pressed while the target is open', () => {
       const targetId = 'target1';
-      const toggle = setup([targetId]).pop();
+      const toggle = setup([[targetId]]).pop();
       const target = document.getElementById(targetId);
       mouseUp(toggle);
       jest.runAllTimers();
@@ -209,7 +212,7 @@ describe('toggle', () => {
   describe('close area', () => {
     it('toggles closed when close button is pressed', () => {
       const targetId = 'target1';
-      const toggle = setup([targetId], { withCloseButtons: true }).pop();
+      const toggle = setup([[targetId, { withCloseButtons: true }]]).pop();
       const target = document.getElementById(targetId);
       const closeButton = document.getElementById(`close-${targetId}`);
 
@@ -240,7 +243,7 @@ describe('toggle', () => {
       const targetId = 'target1';
       let error = null;
       try {
-        setup(['target1'], { withBrokenCloseButtons: true });
+        setup([['target1', { withBrokenCloseButtons: true }]]);
       } catch (e) {
         error = e;
       }
@@ -253,7 +256,7 @@ describe('toggle', () => {
     describe('manual (default)', () => {
       it('Stays open when clicked outside', () => {
         const targetId = 'target1';
-        const toggle = setup([targetId]).pop();
+        const toggle = setup([[targetId]]).pop();
         const target = document.getElementById(targetId);
 
         mouseUp(toggle);
@@ -270,9 +273,10 @@ describe('toggle', () => {
       });
 
       it('stays open when siblings are clicked', () => {
-        const targetIds = ['target1', 'target2'];
-        const toggles = setup(targetIds, { groupName: 'testGroup' });
-        const targets = targetIds.map(id => document.getElementById(id));
+        const target1 = 'target1';
+        const target2 = 'target2';
+        const toggles = setup([[target1], [target2]], { groupName: 'testGroup' });
+        const targets = [target1, target2].map(id => document.getElementById(id));
 
         assertClosed(toggles[0]);
         assertClosed(toggles[1]);
@@ -305,9 +309,11 @@ describe('toggle', () => {
 
     describe('group', () => {
       it('waits for siblings to animate closing before opening', () => {
-        const targetIds = ['target1', 'target2'];
-        const toggles = setup(targetIds, { groupName: 'testGroup', mode: CLOSE_MODE.group });
-        const targets = targetIds.map(id => document.getElementById(id));
+        const target1 = 'target1';
+        const target2 = 'target2';
+        const groupConfig = { groupName: 'testGroup', mode: CLOSE_MODE.group };
+        const toggles = setup([[target1, groupConfig], [target2, groupConfig]]);
+        const targets = [target1, target2].map(id => document.getElementById(id));
 
         assertClosed(toggles[0]);
         assertClosed(toggles[1]);
@@ -347,7 +353,7 @@ describe('toggle', () => {
     describe('outside', () => {
       it('toggle closes when a click is made outside of the toggle or target', () => {
         const targetId = 'target1';
-        const toggle = setup([targetId], { mode: CLOSE_MODE.outside }).pop();
+        const toggle = setup([[targetId, { mode: CLOSE_MODE.outside }]]).pop();
         const target = document.getElementById(targetId);
 
         mouseUp(toggle);
@@ -362,6 +368,86 @@ describe('toggle', () => {
         assertClosed(toggle);
         assertClosed(toggle);
         assertClosed(target);
+      });
+
+      it('toggle closes when a click is on a different toggle', () => {
+        const targetIdManual = 'target1Manual';
+        const targetIdAuto = 'target2Auto';
+
+        setup([[targetIdManual], [targetIdAuto, { mode: CLOSE_MODE.outside }]]).pop();
+
+        const targetManual = document.getElementById(targetIdManual);
+        const toggleManual = getToggleWithTargetId(targetIdManual).pop();
+        const targetAuto = document.getElementById(targetIdAuto);
+        const toggleAuto = getToggleWithTargetId(targetIdAuto).pop();
+
+        mouseUp(toggleManual);
+        jest.runAllTimers();
+
+        assertOpen(toggleManual);
+        assertOpen(targetManual);
+        assertClosed(toggleAuto);
+        assertClosed(targetAuto);
+
+        mouseUp(toggleAuto);
+        jest.runAllTimers();
+
+        assertOpen(toggleManual);
+        assertOpen(targetManual);
+        assertOpen(toggleAuto);
+        assertOpen(targetAuto);
+
+        mouseUp(toggleManual);
+        jest.runAllTimers();
+
+        assertClosed(toggleManual);
+        assertClosed(targetManual);
+        assertClosed(toggleAuto);
+        assertClosed(targetAuto);
+      });
+
+      it('toggle closes when a click is on the open target of a different toggle', () => {
+        const targetIdManual = 'target1Manual';
+        const targetIdAuto = 'target2Auto';
+
+        setup([[targetIdManual], [targetIdAuto, { mode: CLOSE_MODE.outside }]]).pop();
+
+        const targetManual = document.getElementById(targetIdManual);
+        const toggleManual = getToggleWithTargetId(targetIdManual).pop();
+        const targetAuto = document.getElementById(targetIdAuto);
+        const toggleAuto = getToggleWithTargetId(targetIdAuto).pop();
+
+        mouseUp(toggleManual);
+        jest.runAllTimers();
+
+        assertOpen(toggleManual);
+        assertOpen(targetManual);
+        assertClosed(toggleAuto);
+        assertClosed(targetAuto);
+
+        mouseUp(toggleAuto);
+        jest.runAllTimers();
+
+        assertOpen(toggleManual);
+        assertOpen(targetManual);
+        assertOpen(toggleAuto);
+        assertOpen(targetAuto);
+
+        mouseUp(targetAuto);
+        jest.runAllTimers();
+
+        assertOpen(toggleManual);
+        assertOpen(targetManual);
+        assertOpen(toggleAuto);
+        assertOpen(targetAuto);
+
+        mouseUp(targetManual);
+        jest.runAllTimers();
+
+        assertOpen(toggleManual);
+        assertOpen(targetManual);
+        assertClosed(toggleAuto);
+        assertClosed(targetAuto);
       });
     });
   });

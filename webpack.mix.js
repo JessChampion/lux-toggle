@@ -30,7 +30,7 @@ mix.js(SRC.js, DEST.js);
 mix.js(SRC.demo.main, DEST.demo);
 mix.sass(SRC.demo.styles, DEST.demo);
 
-mix.copy(SRC.js, DEST.js);
+mix.copy(SRC.demo.index, DEST.demo);
 
 // Custom webpack config
 if (mix.inProduction()) {

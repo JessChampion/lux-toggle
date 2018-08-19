@@ -29,7 +29,7 @@
     "watch": "yarn build --watch",
     "package": "node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "lint": "yarn lint:js && yarn lint:style",
-    "lint:js": "eslint src/**/*.js tests/**/*.test.js --ignore-pattern tests/coverage/*",
+    "lint:js": "eslint src/**/*.js tests/**/*.test.js --ignore-pattern tests/coverage/**/*.*",
     "lint:style": "stylelint \"demo/scss/**/*.scss\"",
     "test": "jest",
     "test:coverage": "yarn test --coverage",

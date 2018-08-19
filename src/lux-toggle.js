@@ -2,31 +2,31 @@
  *  Toggle function
  *
  *  TOGGLES
- *  Toggles are specified by adding a data attribute 'config.attributes.target' to an html element.
- *  The value of the 'config.attributes.target' should ID the idea of the target.
+ *  Toggles are specified by adding a data attribute 'config.attr.target' to an html element.
+ *  The value of the 'config.attr.target' should ID the idea of the target.
  *  When the toggle is clicked both the toggle and target will have opening,
  *  open and closing classes applied as appropriate, with delays to allow css
  *  animations to be applied.
  *
  *  TOGGLE GROUPS
- *  Groups can be defined by adding the 'config.attributes.group' to the toggle element.
- *  The value of the 'config.attributes.group' should be the group name.
+ *  Groups can be defined by adding the 'config.attr.toggleGroup' to the toggle element.
+ *  The value of the 'config.attr.toggleGroup' should be the group name.
  *  When toggling a toggle in the group, it will check if any of the siblings are open
  *  and if so, delay the open event to allow the sibling to close.
  *
  *  CLOSE BUTTON
  *  You can set any element inside the toggle target to act as a close button.
- *  Set the ID of the close button as the value for the the 'config.attributes.close'
+ *  Set the ID of the close button as the value for the the 'config.attr.closeButton'
  *  data attribute on the toggle element.
  *
  *  CLOSE MODE
- *  A close mode can be configured by 'config.attributes.mode'
+ *  A close mode can be configured by 'config.attr.closeMode'
  *  Options are 'manual', 'group' or 'outside'
  *  'manual':   close only when clicking toggle, by keyboard or close area. (DEFAULT)
  *  'group':    close siblings when another in the same group is opened.
  *  'outside':  always close on click outside
  *
- *  'config.attributes.target', 'config.attributes.group' and 'config.attributes.close',
+ *  'config.attr.target', 'config.attr.toggleGroup' and 'config.attr.closeButton',
  *  as well as the toggle classes and animation delays are set as config variables below.
  */
 
@@ -56,11 +56,11 @@ export const config = {
     closeDuration: 300,
     siblingOpenDelay: 350
   },
-  attributes: {
+  attr: {
     target: 'data-lux-toggle',
-    group: 'data-lux-toggle-group',
-    close: 'data-lux-toggle-close',
-    mode: 'data-lux-toggle-mode',
+    toggleGroup: 'data-lux-toggle-group',
+    closeButton: 'data-lux-toggle-close',
+    closeMode: 'data-lux-toggle-mode',
   },
   classes: {
     open: 'toggle--open',
@@ -109,7 +109,7 @@ const setAriaExpanded = (target, expandedState) => target.setAttribute('aria-exp
 
 const initAriaAttributes = (toggle) => {
   setAriaExpanded(toggle, false);
-  const targetID = toggle.getAttribute(config.attributes.target);
+  const targetID = toggle.getAttribute(config.attr.target);
   toggle.setAttribute('aria-controls', targetID);
 };
 
@@ -121,6 +121,10 @@ const attachListeners = (element, action, targetEvents = config.events.click) =>
   targetEvents.forEach((event) => {
     element.addEventListener(event, action);
   });
+};
+
+const attachListenersInNextTick = (element, action, targetEvents = config.events.click) => {
+  setTimeout(() => attachListeners(element, action, targetEvents), 1);
 };
 
 const removeListeners = (element, action, targetEvents = config.events.click) => {
@@ -148,10 +152,10 @@ const attachKeyListeners = (element, targetKeys, action, targetEvents = config.e
 // DOM functions
 // ----------------------------------
 
-const getToggleElements = () => Array.from(document.querySelectorAll(`[${config.attributes.target}]`));
+const getToggleElements = () => Array.from(document.querySelectorAll(`[${config.attr.target}]`));
 
 const getTargetElement = (toggle) => {
-  const targetID = toggle.getAttribute(config.attributes.target);
+  const targetID = toggle.getAttribute(config.attr.target);
   const target = document.getElementById(targetID);
   if (!target) {
     throw new DOMException(`Toggle Error: unable to find an element with ID '${targetID}'`);
@@ -159,7 +163,7 @@ const getTargetElement = (toggle) => {
   return target;
 };
 
-const getSiblingsWithState = (stateClass, toggleGroupName) => Array.from(document.querySelectorAll(`[${config.attributes.group}='${toggleGroupName}'].${stateClass}`));
+const getSiblingsWithState = (stateClass, toggleGroupName) => Array.from(document.querySelectorAll(`[${config.attr.toggleGroup}='${toggleGroupName}'].${stateClass}`));
 
 const getActiveSiblingsToggles = (toggleGroupName) => {
   const openSiblings = getSiblingsWithState(config.classes.open, toggleGroupName);
@@ -170,7 +174,7 @@ const getActiveSiblingsToggles = (toggleGroupName) => {
 const hasActiveSiblingsToggles = groupName => getActiveSiblingsToggles(groupName).length > 0;
 
 const findCloseArea = (element) => {
-  const closeAreaID = element.getAttribute(config.attributes.close);
+  const closeAreaID = element.getAttribute(config.attr.closeButton);
   if (closeAreaID) {
     const closeArea = document.getElementById(closeAreaID);
     if (!closeArea) {
@@ -187,15 +191,15 @@ const click = (target) => {
   target.dispatchEvent(event);
 };
 
-const getGroupName = target => target.getAttribute(config.attributes.group) || null;
+const getGroupName = target => target.getAttribute(config.attr.toggleGroup) || null;
 
-const getCloseMode = target => target.getAttribute(config.attributes.mode) || DEFAULT_CLOSE_MODE;
+const getCloseMode = target => target.getAttribute(config.attr.closeMode) || DEFAULT_CLOSE_MODE;
 
 // ----------------------------------
 // Handler creators
 // ----------------------------------
 
-const getClickOutsideHandler = (toggle, target) => () => {
+const getCloseHandler = (toggle, target) => () => {
   toggle.close();
   target.close();
 };
@@ -204,30 +208,29 @@ const getClickOutsideHandler = (toggle, target) => () => {
 // Object model creators
 // ----------------------------------
 
-const mountTarget = (element) => {
-  const onClick = event => event.stopPropagation(); // eat the event - nom nom
+const mountTarget = (element, closeMode) => ({
+  open() {
+    setOpeningClasses(element);
 
-  return {
-    open() {
-      setOpeningClasses(element);
+    // accessibility actions
+    element.focus();
+  },
 
-      // accessibility actions
-      element.focus();
-    },
+  close() {
+    setClosingClasses(element);
+  },
 
-    close() {
-      setClosingClasses(element);
-    },
-
-    bindEvents() {
-      attachListeners(element, onClick);
+  bindEvents() {
+    if (closeMode === CLOSE_MODE.outside) {
+      const onClickTarget = event => event.stopPropagation(); // eat the event - nom nom
+      attachListeners(element, onClickTarget);
     }
-  };
-};
+  }
+});
 
-const mountToggle = (element, target, closeArea = null) => {
+
+const mountToggle = (element, target, closeMode, closeArea = null) => {
   const groupName = getGroupName(element);
-  const closeMode = getCloseMode(element);
 
   initAriaAttributes(element);
 
@@ -239,7 +242,8 @@ const mountToggle = (element, target, closeArea = null) => {
 
       // bind close events
       if (closeMode !== CLOSE_MODE.manual) {
-        attachListeners(document.body, this.clickOutsideHandler);
+        // needs to happen after event propagation
+        attachListenersInNextTick(document.body, this.closeHandler);
       }
       attachListeners(document.body, this.keyboardCloseHandler, config.events.key);
 
@@ -253,15 +257,14 @@ const mountToggle = (element, target, closeArea = null) => {
       target.close();
 
       // unbind close events
-      removeListeners(document.body, this.clickOutsideHandler);
+      removeListeners(document.body, this.closeHandler);
       removeListeners(document.body, this.keyboardCloseHandler, config.events.key);
 
       // accessibility actions
       setAriaExpanded(element, false);
     },
 
-    onToggle(event) {
-      event.stopPropagation();
+    onToggle() {
       if (isOpen(element)) {
         this.close();
         return;
@@ -269,7 +272,7 @@ const mountToggle = (element, target, closeArea = null) => {
       if (closeMode === CLOSE_MODE.group && hasActiveSiblingsToggles(groupName)) {
         // apply opening classes to toggle straight away so it looks like somethings happening
         element.classList.add(config.classes.opening);
-        click(element.parentElement);
+        click(element.parentElement); // continue event propagation
         // open in a bit to let siblings close
         setTimeout(this.open.bind(this), config.animations.siblingOpenDelay);
         return;
@@ -277,10 +280,10 @@ const mountToggle = (element, target, closeArea = null) => {
       this.open();
     },
 
-    bindEvents(clickOutsideHandler) {
-      this.clickOutsideHandler = clickOutsideHandler;
+    bindEvents(closeHandler) {
+      this.closeHandler = closeHandler;
       this.keyboardCloseHandler = getKeypressHandler([KEYS.escape], () => {
-        clickOutsideHandler();
+        closeHandler();
         element.focus();
       });
       attachListeners(element, this.onToggle.bind(this));
@@ -293,17 +296,17 @@ const mountToggle = (element, target, closeArea = null) => {
       target.bindEvents();
 
       if (closeArea) {
-        const closeHandler = (event) => {
-          event.stopPropagation();
+        const closeButtonHandler = () => {
           this.close();
+          click(element.parentElement); // continue event propagation
         };
 
-        attachListeners(closeArea, closeHandler);
+        attachListeners(closeArea, closeButtonHandler);
 
         attachKeyListeners(
           closeArea,
           [KEYS.enter, KEYS.space, KEYS.escape],
-          closeHandler
+          closeButtonHandler
         );
       }
     }
@@ -317,13 +320,14 @@ const mountToggle = (element, target, closeArea = null) => {
 const createToggle = (element) => {
   // get sub components
   const targetElement = getTargetElement(element);
-  const target = mountTarget(targetElement);
   const closeArea = findCloseArea(element);
+  const closeMode = getCloseMode(element);
 
-  const toggle = mountToggle(element, target, closeArea);
-  const clickOutsideHandler = getClickOutsideHandler(toggle, target);
+  const target = mountTarget(targetElement, closeMode);
+  const toggle = mountToggle(element, target, closeMode, closeArea);
+  const closeHandler = getCloseHandler(toggle, target);
 
-  toggle.bindEvents(clickOutsideHandler);
+  toggle.bindEvents(closeHandler);
 
   return toggle;
 };

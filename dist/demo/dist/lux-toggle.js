@@ -481,31 +481,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  *  Toggle function
  *
  *  TOGGLES
- *  Toggles are specified by adding a data attribute 'config.attributes.target' to an html element.
- *  The value of the 'config.attributes.target' should ID the idea of the target.
+ *  Toggles are specified by adding a data attribute 'config.attr.target' to an html element.
+ *  The value of the 'config.attr.target' should ID the idea of the target.
  *  When the toggle is clicked both the toggle and target will have opening,
  *  open and closing classes applied as appropriate, with delays to allow css
  *  animations to be applied.
  *
  *  TOGGLE GROUPS
- *  Groups can be defined by adding the 'config.attributes.group' to the toggle element.
- *  The value of the 'config.attributes.group' should be the group name.
+ *  Groups can be defined by adding the 'config.attr.toggleGroup' to the toggle element.
+ *  The value of the 'config.attr.toggleGroup' should be the group name.
  *  When toggling a toggle in the group, it will check if any of the siblings are open
  *  and if so, delay the open event to allow the sibling to close.
  *
  *  CLOSE BUTTON
  *  You can set any element inside the toggle target to act as a close button.
- *  Set the ID of the close button as the value for the the 'config.attributes.close'
+ *  Set the ID of the close button as the value for the the 'config.attr.closeButton'
  *  data attribute on the toggle element.
  *
  *  CLOSE MODE
- *  A close mode can be configured by 'config.attributes.mode'
+ *  A close mode can be configured by 'config.attr.closeMode'
  *  Options are 'manual', 'group' or 'outside'
  *  'manual':   close only when clicking toggle, by keyboard or close area. (DEFAULT)
  *  'group':    close siblings when another in the same group is opened.
  *  'outside':  always close on click outside
  *
- *  'config.attributes.target', 'config.attributes.group' and 'config.attributes.close',
+ *  'config.attr.target', 'config.attr.toggleGroup' and 'config.attr.closeButton',
  *  as well as the toggle classes and animation delays are set as config variables below.
  */
 
@@ -535,11 +535,11 @@ var config = {
     closeDuration: 300,
     siblingOpenDelay: 350
   },
-  attributes: {
+  attr: {
     target: 'data-lux-toggle',
-    group: 'data-lux-toggle-group',
-    close: 'data-lux-toggle-close',
-    mode: 'data-lux-toggle-mode'
+    toggleGroup: 'data-lux-toggle-group',
+    closeButton: 'data-lux-toggle-close',
+    closeMode: 'data-lux-toggle-mode'
   },
   classes: {
     open: 'toggle--open',
@@ -592,7 +592,7 @@ var setAriaExpanded = function setAriaExpanded(target, expandedState) {
 
 var initAriaAttributes = function initAriaAttributes(toggle) {
   setAriaExpanded(toggle, false);
-  var targetID = toggle.getAttribute(config.attributes.target);
+  var targetID = toggle.getAttribute(config.attr.target);
   toggle.setAttribute('aria-controls', targetID);
 };
 
@@ -606,6 +606,14 @@ var attachListeners = function attachListeners(element, action) {
   targetEvents.forEach(function (event) {
     element.addEventListener(event, action);
   });
+};
+
+var attachListenersInNextTick = function attachListenersInNextTick(element, action) {
+  var targetEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.events.click;
+
+  setTimeout(function () {
+    return attachListeners(element, action, targetEvents);
+  }, 1);
 };
 
 var removeListeners = function removeListeners(element, action) {
@@ -640,11 +648,11 @@ var attachKeyListeners = function attachKeyListeners(element, targetKeys, action
 // ----------------------------------
 
 var getToggleElements = function getToggleElements() {
-  return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_array_from___default()(document.querySelectorAll('[' + config.attributes.target + ']'));
+  return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_array_from___default()(document.querySelectorAll('[' + config.attr.target + ']'));
 };
 
 var getTargetElement = function getTargetElement(toggle) {
-  var targetID = toggle.getAttribute(config.attributes.target);
+  var targetID = toggle.getAttribute(config.attr.target);
   var target = document.getElementById(targetID);
   if (!target) {
     throw new DOMException('Toggle Error: unable to find an element with ID \'' + targetID + '\'');
@@ -653,7 +661,7 @@ var getTargetElement = function getTargetElement(toggle) {
 };
 
 var getSiblingsWithState = function getSiblingsWithState(stateClass, toggleGroupName) {
-  return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_array_from___default()(document.querySelectorAll('[' + config.attributes.group + '=\'' + toggleGroupName + '\'].' + stateClass));
+  return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_array_from___default()(document.querySelectorAll('[' + config.attr.toggleGroup + '=\'' + toggleGroupName + '\'].' + stateClass));
 };
 
 var getActiveSiblingsToggles = function getActiveSiblingsToggles(toggleGroupName) {
@@ -667,7 +675,7 @@ var hasActiveSiblingsToggles = function hasActiveSiblingsToggles(groupName) {
 };
 
 var findCloseArea = function findCloseArea(element) {
-  var closeAreaID = element.getAttribute(config.attributes.close);
+  var closeAreaID = element.getAttribute(config.attr.closeButton);
   if (closeAreaID) {
     var closeArea = document.getElementById(closeAreaID);
     if (!closeArea) {
@@ -685,18 +693,18 @@ var click = function click(target) {
 };
 
 var getGroupName = function getGroupName(target) {
-  return target.getAttribute(config.attributes.group) || null;
+  return target.getAttribute(config.attr.toggleGroup) || null;
 };
 
 var getCloseMode = function getCloseMode(target) {
-  return target.getAttribute(config.attributes.mode) || DEFAULT_CLOSE_MODE;
+  return target.getAttribute(config.attr.closeMode) || DEFAULT_CLOSE_MODE;
 };
 
 // ----------------------------------
 // Handler creators
 // ----------------------------------
 
-var getClickOutsideHandler = function getClickOutsideHandler(toggle, target) {
+var getCloseHandler = function getCloseHandler(toggle, target) {
   return function () {
     toggle.close();
     target.close();
@@ -707,11 +715,7 @@ var getClickOutsideHandler = function getClickOutsideHandler(toggle, target) {
 // Object model creators
 // ----------------------------------
 
-var mountTarget = function mountTarget(element) {
-  var onClick = function onClick(event) {
-    return event.stopPropagation();
-  }; // eat the event - nom nom
-
+var mountTarget = function mountTarget(element, closeMode) {
   return {
     open: function open() {
       setOpeningClasses(element);
@@ -723,16 +727,20 @@ var mountTarget = function mountTarget(element) {
       setClosingClasses(element);
     },
     bindEvents: function bindEvents() {
-      attachListeners(element, onClick);
+      if (closeMode === CLOSE_MODE.outside) {
+        var onClickTarget = function onClickTarget(event) {
+          return event.stopPropagation();
+        }; // eat the event - nom nom
+        attachListeners(element, onClickTarget);
+      }
     }
   };
 };
 
-var mountToggle = function mountToggle(element, target) {
-  var closeArea = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+var mountToggle = function mountToggle(element, target, closeMode) {
+  var closeArea = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   var groupName = getGroupName(element);
-  var closeMode = getCloseMode(element);
 
   initAriaAttributes(element);
 
@@ -744,7 +752,8 @@ var mountToggle = function mountToggle(element, target) {
 
       // bind close events
       if (closeMode !== CLOSE_MODE.manual) {
-        attachListeners(document.body, this.clickOutsideHandler);
+        // needs to happen after event propagation
+        attachListenersInNextTick(document.body, this.closeHandler);
       }
       attachListeners(document.body, this.keyboardCloseHandler, config.events.key);
 
@@ -759,14 +768,13 @@ var mountToggle = function mountToggle(element, target) {
       target.close();
 
       // unbind close events
-      removeListeners(document.body, this.clickOutsideHandler);
+      removeListeners(document.body, this.closeHandler);
       removeListeners(document.body, this.keyboardCloseHandler, config.events.key);
 
       // accessibility actions
       setAriaExpanded(element, false);
     },
-    onToggle: function onToggle(event) {
-      event.stopPropagation();
+    onToggle: function onToggle() {
       if (isOpen(element)) {
         this.close();
         return;
@@ -774,19 +782,19 @@ var mountToggle = function mountToggle(element, target) {
       if (closeMode === CLOSE_MODE.group && hasActiveSiblingsToggles(groupName)) {
         // apply opening classes to toggle straight away so it looks like somethings happening
         element.classList.add(config.classes.opening);
-        click(element.parentElement);
+        click(element.parentElement); // continue event propagation
         // open in a bit to let siblings close
         setTimeout(this.open.bind(this), config.animations.siblingOpenDelay);
         return;
       }
       this.open();
     },
-    bindEvents: function bindEvents(clickOutsideHandler) {
+    bindEvents: function bindEvents(closeHandler) {
       var _this = this;
 
-      this.clickOutsideHandler = clickOutsideHandler;
+      this.closeHandler = closeHandler;
       this.keyboardCloseHandler = getKeypressHandler([KEYS.escape], function () {
-        clickOutsideHandler();
+        closeHandler();
         element.focus();
       });
       attachListeners(element, this.onToggle.bind(this));
@@ -795,14 +803,14 @@ var mountToggle = function mountToggle(element, target) {
       target.bindEvents();
 
       if (closeArea) {
-        var closeHandler = function closeHandler(event) {
-          event.stopPropagation();
+        var closeButtonHandler = function closeButtonHandler() {
           _this.close();
+          click(element.parentElement); // continue event propagation
         };
 
-        attachListeners(closeArea, closeHandler);
+        attachListeners(closeArea, closeButtonHandler);
 
-        attachKeyListeners(closeArea, [KEYS.enter, KEYS.space, KEYS.escape], closeHandler);
+        attachKeyListeners(closeArea, [KEYS.enter, KEYS.space, KEYS.escape], closeButtonHandler);
       }
     }
   };
@@ -815,13 +823,14 @@ var mountToggle = function mountToggle(element, target) {
 var createToggle = function createToggle(element) {
   // get sub components
   var targetElement = getTargetElement(element);
-  var target = mountTarget(targetElement);
   var closeArea = findCloseArea(element);
+  var closeMode = getCloseMode(element);
 
-  var toggle = mountToggle(element, target, closeArea);
-  var clickOutsideHandler = getClickOutsideHandler(toggle, target);
+  var target = mountTarget(targetElement, closeMode);
+  var toggle = mountToggle(element, target, closeMode, closeArea);
+  var closeHandler = getCloseHandler(toggle, target);
 
-  toggle.bindEvents(clickOutsideHandler);
+  toggle.bindEvents(closeHandler);
 
   return toggle;
 };

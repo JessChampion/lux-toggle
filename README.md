@@ -97,9 +97,8 @@ or
 2. Update version number in `package.json`
 3. Commit changes
   `git commit -am"V X.Y.Z"` 
-5. Deploy to npm
+4. Deploy to npm
    `npm publish`
-4. Update version number in `package.json` and push to master
 
 ### Code Style
 There are linters set up to enforce code style, run with `yarn lint`.
