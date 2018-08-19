@@ -8,6 +8,7 @@ const destPath = 'dist/';
 const SRC = {
   js: srcPath + 'lux-toggle.js',
   demo: {
+    images: 'demo/images',
     index: 'demo/index.html',
     main: 'demo/main.js',
     styles: 'demo/main.scss'
@@ -16,20 +17,24 @@ const SRC = {
 
 const DEST = {
   js: destPath,
-  demo: destPath + 'demo/'
+  demo: destPath + 'demo/',
+  images: destPath + 'demo/images/'
 };
 
 mix.setPublicPath(__dirname);
 mix.config.resourceRoot = '';
-mix.config.publicPath = 'dist/demo';
 
 // build the utility
 mix.js(SRC.js, DEST.js);
 
 // build the demo
 mix.js(SRC.demo.main, DEST.demo);
-mix.sass(SRC.demo.styles, DEST.demo);
+mix.sass(SRC.demo.styles, DEST.demo).options({
+  processCssUrls: false
+});
+;
 
+mix.copyDirectory(SRC.demo.images, DEST.images);
 mix.copy(SRC.demo.index, DEST.demo);
 
 // Custom webpack config
