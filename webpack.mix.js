@@ -32,7 +32,6 @@ mix.js(SRC.demo.main, DEST.demo);
 mix.sass(SRC.demo.styles, DEST.demo).options({
   processCssUrls: false
 });
-;
 
 mix.copyDirectory(SRC.demo.images, DEST.images);
 mix.copy(SRC.demo.index, DEST.demo);
