@@ -74,9 +74,6 @@ or
 - __run linters__:
 `yarn lint`
 
-- __build for production with minification and view bundle analyzer report__:
-`yarn package`
-
 - __push dist/demo sub folder to github pages branch__:
 `yarn deploy:demo`
 
@@ -88,7 +85,7 @@ or
 
 #### Demo build
 1. Build
-  `yarn package`
+  `yarn build`
 2. Commit changes
   `git commit -am"V X.Y.Z"`
 3. Push to gh-pages branch
@@ -96,8 +93,7 @@ or
 4. Update version number in `package.json` and push to master
 
 #### Production build
-1. Build
-  `yarn package`
+1. Build `yarn build`
 2. Update version number in `package.json`
 3. Commit changes
   `git commit -am"V X.Y.Z"` 
