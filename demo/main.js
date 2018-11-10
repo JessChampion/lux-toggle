@@ -1,3 +1,3 @@
-import luxToggle from '../src/lux-toggle';
+import luxToggle from '../dist/lux-toggle';
 
 luxToggle();
