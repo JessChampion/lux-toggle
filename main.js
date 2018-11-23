@@ -551,7 +551,7 @@ var config = {
   animations: {
     openDelay: 2,
     closeDuration: 300,
-    siblingOpenDelay: 350
+    siblingOpenDelay: 300
   },
   attr: {
     target: 'data-lux-toggle',
