@@ -10,7 +10,7 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-jest": "^23.0.0-alpha.0",
-    "cross-env": "^5.1.4",
+    "cross-env": "^5.2.0",
     "eslint": "^4.18.2",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.9.0",
@@ -18,6 +18,7 @@
     "eslint-plugin-jest": "^21.15.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
+    "imagemin": "^6.0.0",
     "jest": "^22.4.3",
     "laravel-mix": "^2.1.14",
     "stylelint": "^9.1.3",
