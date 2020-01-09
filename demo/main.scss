@@ -195,11 +195,13 @@ body {
     &:hover {
       color: $color-primary;
       border-color: $color-primary-light;
+      text-decoration: underline;
     }
 
     &:active, &:focus {
       outline: none;
       box-shadow: 0 0 0.5rem 0.5rem -webkit-focus-ring-color;
+      text-decoration: underline;
     }
   }
 
@@ -276,9 +278,12 @@ body {
       margin: 0.5rem;
       text-align: center;
 
-      &:hover {
+      &:hover,
+      &:focus,
+      &:active {
         color: $color-primary;
         border-color: $color-primary-light;
+        text-decoration: underline;
       }
     }
   }
