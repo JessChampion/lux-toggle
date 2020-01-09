@@ -1,6 +1,6 @@
 {
   "name": "lux-toggle",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A utility for creating toggleable items with JavaScript. Inspired by bootstrap's toggle utility. Implemented in vanillaJS in a functional style.",
   "main": "dist/lux-toggle.js",
   "repository": "git@github.com:JessChampion/lux-toggle.git",
