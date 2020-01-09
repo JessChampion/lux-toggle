@@ -160,12 +160,14 @@ body {
 .toggle__button:hover {
   color: #D44678;
   border-color: #E284A5;
+  text-decoration: underline;
 }
 
 .toggle__button:active, .toggle__button:focus {
   outline: none;
   -webkit-box-shadow: 0 0 0.5rem 0.5rem -webkit-focus-ring-color;
           box-shadow: 0 0 0.5rem 0.5rem -webkit-focus-ring-color;
+  text-decoration: underline;
 }
 
 .toggle__content {
@@ -239,9 +241,10 @@ body {
   text-align: center;
 }
 
-.toggle__content .btn:hover {
+.toggle__content .btn:hover, .toggle__content .btn:focus, .toggle__content .btn:active {
   color: #D44678;
   border-color: #E284A5;
+  text-decoration: underline;
 }
 
 .toggle__group {
