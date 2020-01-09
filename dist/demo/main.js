@@ -635,7 +635,7 @@ var initAriaAttributesToggle = function initAriaAttributesToggle(toggleButton) {
   toggleButton.setAttribute('aria-controls', targetID);
   setTabIndexIfUnset(toggleButton);
   if (isMenu) {
-    toggleButton.setAttribute('aria-haspopup', true);
+    toggleButton.setAttribute('aria-haspopup', 'true');
   }
 };
 
@@ -793,7 +793,7 @@ var mountToggle = function mountToggle(element, target, closeMode) {
 
   initAriaAttributesToggle(element, isMenu);
   if (closeArea) {
-    initAriaAttributesToggle(closeArea); // treat close button as another toggle
+    initAriaAttributesToggle(closeArea, isMenu); // treat close button as another toggle
   }
 
   return {
