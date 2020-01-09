@@ -523,6 +523,12 @@ Object(__WEBPACK_IMPORTED_MODULE_0__src_lux_toggle__["a" /* default */])();
  *  'group':    close siblings when another in the same group is opened.
  *  'outside':  always close on click outside
  *
+ *  MENU MODE
+ *  A close mode can be configured by 'config.attr.menuMode'
+ *  Options are 'true', or 'false'
+ *  'false':   The target of this toggle IS NOT a menu, aria-haspopup WILL NOT be set (DEFAULT)
+ *  'true':    The target of this toggle IS a menu, aria-haspopup WILL be set
+ *
  *  'config.attr.target', 'config.attr.toggleGroup' and 'config.attr.closeButton',
  *  as well as the toggle classes and animation delays are set as config variables below.
  */
@@ -532,43 +538,45 @@ Object(__WEBPACK_IMPORTED_MODULE_0__src_lux_toggle__["a" /* default */])();
 // ----------------------------------
 
 var KEYS = {
-    enter: 13,
-    escape: 27,
-    space: 32,
-    down: 40,
-    up: 38,
-    tab: 9
+  enter: 13,
+  escape: 27,
+  space: 32,
+  down: 40,
+  up: 38,
+  tab: 9
 };
 
 var CLOSE_MODE = {
-    manual: 'manual',
-    group: 'group',
-    outside: 'outside'
+  manual: 'manual',
+  group: 'group',
+  outside: 'outside'
 };
 
 var DEFAULT_CLOSE_MODE = CLOSE_MODE.manual;
+var DEFAULT_MENU_MODE = false;
 
 var config = {
-    animations: {
-        openDelay: 2,
-        closeDuration: 300,
-        siblingOpenDelay: 300
-    },
-    attr: {
-        target: 'data-lux-toggle',
-        toggleGroup: 'data-lux-toggle-group',
-        closeButton: 'data-lux-toggle-close',
-        closeMode: 'data-lux-toggle-mode'
-    },
-    classes: {
-        open: 'toggle--open',
-        opening: 'toggle--opening',
-        closing: 'toggle--closing'
-    },
-    events: {
-        click: ['mouseup'],
-        key: ['keyup']
-    }
+  animations: {
+    openDelay: 2,
+    closeDuration: 300,
+    siblingOpenDelay: 300
+  },
+  attr: {
+    target: 'data-lux-toggle',
+    toggleGroup: 'data-lux-toggle-group',
+    closeButton: 'data-lux-toggle-close',
+    closeMode: 'data-lux-toggle-mode',
+    menuMode: 'data-lux-toggle-menu'
+  },
+  classes: {
+    open: 'toggle--open',
+    opening: 'toggle--opening',
+    closing: 'toggle--closing'
+  },
+  events: {
+    click: ['mouseup'],
+    key: ['keyup']
+  }
 };
 
 // ----------------------------------
@@ -576,29 +584,29 @@ var config = {
 // ----------------------------------
 
 var isOpen = function isOpen(target) {
-    return target.classList.contains(config.classes.open);
+  return target.classList.contains(config.classes.open);
 };
 
 var animate = function animate(action, animationDelay) {
-    return setTimeout(function () {
-        return action();
-    }, animationDelay);
+  return setTimeout(function () {
+    return action();
+  }, animationDelay);
 };
 
 var setOpeningClasses = function setOpeningClasses(element) {
-    element.classList.add(config.classes.opening);
-    animate(function () {
-        element.classList.add(config.classes.open);
-        element.classList.remove(config.classes.opening);
-    }, config.animations.openDelay);
+  element.classList.add(config.classes.opening);
+  animate(function () {
+    element.classList.add(config.classes.open);
+    element.classList.remove(config.classes.opening);
+  }, config.animations.openDelay);
 };
 
 var setClosingClasses = function setClosingClasses(element) {
-    element.classList.add(config.classes.closing);
-    element.classList.remove(config.classes.open);
-    animate(function () {
-        return element.classList.remove(config.classes.closing);
-    }, config.animations.closeDuration);
+  element.classList.add(config.classes.closing);
+  element.classList.remove(config.classes.open);
+  animate(function () {
+    return element.classList.remove(config.classes.closing);
+  }, config.animations.closeDuration);
 };
 
 // ----------------------------------
@@ -606,13 +614,29 @@ var setClosingClasses = function setClosingClasses(element) {
 // ----------------------------------
 
 var setAriaExpanded = function setAriaExpanded(target, expandedState) {
-    return target.setAttribute('aria-expanded', expandedState);
+  return target.setAttribute('aria-expanded', expandedState);
+};
+var setTabIndex = function setTabIndex(target) {
+  var indexValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return target.setAttribute('tabindex', indexValue);
+};
+var setTabIndexIfUnset = function setTabIndexIfUnset(target) {
+  if (target.hasAttribute('tabindex')) {
+    return target;
+  }
+  return setTabIndex(target);
 };
 
-var initAriaAttributes = function initAriaAttributes(toggle) {
-    setAriaExpanded(toggle, false);
-    var targetID = toggle.getAttribute(config.attr.target);
-    toggle.setAttribute('aria-controls', targetID);
+var initAriaAttributesToggle = function initAriaAttributesToggle(toggleButton) {
+  var isMenu = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+  setAriaExpanded(toggleButton, false);
+  var targetID = toggleButton.getAttribute(config.attr.target);
+  toggleButton.setAttribute('aria-controls', targetID);
+  setTabIndexIfUnset(toggleButton);
+  if (isMenu) {
+    toggleButton.setAttribute('aria-haspopup', true);
+  }
 };
 
 // ----------------------------------
@@ -620,46 +644,46 @@ var initAriaAttributes = function initAriaAttributes(toggle) {
 // ----------------------------------
 
 var attachListeners = function attachListeners(element, action) {
-    var targetEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.events.click;
+  var targetEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.events.click;
 
-    targetEvents.forEach(function (event) {
-        element.addEventListener(event, action);
-    });
+  targetEvents.forEach(function (event) {
+    element.addEventListener(event, action);
+  });
 };
 
 var attachListenersInNextTick = function attachListenersInNextTick(element, action) {
-    var targetEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.events.click;
+  var targetEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.events.click;
 
-    setTimeout(function () {
-        return attachListeners(element, action, targetEvents);
-    }, 1);
+  setTimeout(function () {
+    return attachListeners(element, action, targetEvents);
+  }, 1);
 };
 
 var removeListeners = function removeListeners(element, action) {
-    var targetEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.events.click;
+  var targetEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : config.events.click;
 
-    targetEvents.forEach(function (event) {
-        element.removeEventListener(event, action);
-    });
+  targetEvents.forEach(function (event) {
+    element.removeEventListener(event, action);
+  });
 };
 
 var keyPressIsOneOf = function keyPressIsOneOf(targetKeys, event) {
-    var code = event.keyCode || event.which;
-    return targetKeys.includes(code);
+  var code = event.keyCode || event.which;
+  return targetKeys.includes(code);
 };
 
 var getKeypressHandler = function getKeypressHandler(targetKeys, action) {
-    return function (event) {
-        if (keyPressIsOneOf(targetKeys, event)) {
-            action(event);
-        }
-    };
+  return function (event) {
+    if (keyPressIsOneOf(targetKeys, event)) {
+      action(event);
+    }
+  };
 };
 
 var attachKeyListeners = function attachKeyListeners(element, targetKeys, action) {
-    var targetEvents = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : config.events.key;
+  var targetEvents = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : config.events.key;
 
-    attachListeners(element, getKeypressHandler(targetKeys, action), targetEvents);
+  attachListeners(element, getKeypressHandler(targetKeys, action), targetEvents);
 };
 
 // ----------------------------------
@@ -667,56 +691,60 @@ var attachKeyListeners = function attachKeyListeners(element, targetKeys, action
 // ----------------------------------
 
 var getToggleElements = function getToggleElements() {
-    return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_array_from___default()(document.querySelectorAll('[' + config.attr.target + ']'));
+  return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_array_from___default()(document.querySelectorAll('[' + config.attr.target + ']'));
 };
 
 var getTargetElement = function getTargetElement(toggle) {
-    var targetID = toggle.getAttribute(config.attr.target);
-    var target = document.getElementById(targetID);
-    if (!target) {
-        throw new DOMException('Toggle Error: unable to find an element with ID \'' + targetID + '\'');
-    }
-    return target;
+  var targetID = toggle.getAttribute(config.attr.target);
+  var target = document.getElementById(targetID);
+  if (!target) {
+    throw new DOMException('Toggle Error: unable to find an element with ID \'' + targetID + '\'');
+  }
+  return target;
 };
 
 var getSiblingsWithState = function getSiblingsWithState(stateClass, toggleGroupName) {
-    return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_array_from___default()(document.querySelectorAll('[' + config.attr.toggleGroup + '=\'' + toggleGroupName + '\'].' + stateClass));
+  return __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_array_from___default()(document.querySelectorAll('[' + config.attr.toggleGroup + '=\'' + toggleGroupName + '\'].' + stateClass));
 };
 
 var getActiveSiblingsToggles = function getActiveSiblingsToggles(toggleGroupName) {
-    var openSiblings = getSiblingsWithState(config.classes.open, toggleGroupName);
-    var openingSiblings = getSiblingsWithState(config.classes.opening, toggleGroupName);
-    return [].concat(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(openSiblings), __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(openingSiblings));
+  var openSiblings = getSiblingsWithState(config.classes.open, toggleGroupName);
+  var openingSiblings = getSiblingsWithState(config.classes.opening, toggleGroupName);
+  return [].concat(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(openSiblings), __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_toConsumableArray___default()(openingSiblings));
 };
 
 var hasActiveSiblingsToggles = function hasActiveSiblingsToggles(groupName) {
-    return getActiveSiblingsToggles(groupName).length > 0;
+  return getActiveSiblingsToggles(groupName).length > 0;
 };
 
 var findCloseArea = function findCloseArea(element) {
-    var closeAreaID = element.getAttribute(config.attr.closeButton);
-    if (closeAreaID) {
-        var closeArea = document.getElementById(closeAreaID);
-        if (!closeArea) {
-            throw new DOMException('Toggle Error: unable to find close element with ID \'' + closeAreaID + '\'');
-        }
-        return closeArea;
+  var closeAreaID = element.getAttribute(config.attr.closeButton);
+  if (closeAreaID) {
+    var closeArea = document.getElementById(closeAreaID);
+    if (!closeArea) {
+      throw new DOMException('Toggle Error: unable to find close element with ID \'' + closeAreaID + '\'');
     }
-    return null;
+    return closeArea;
+  }
+  return null;
 };
 
 var click = function click(target) {
-    var event = document.createEvent('Event');
-    event.initEvent('mouseup', true, true);
-    target.dispatchEvent(event);
+  var event = document.createEvent('Event');
+  event.initEvent('mouseup', true, true);
+  target.dispatchEvent(event);
 };
 
 var getGroupName = function getGroupName(target) {
-    return target.getAttribute(config.attr.toggleGroup) || null;
+  return target.getAttribute(config.attr.toggleGroup) || null;
 };
 
 var getCloseMode = function getCloseMode(target) {
-    return target.getAttribute(config.attr.closeMode) || DEFAULT_CLOSE_MODE;
+  return target.getAttribute(config.attr.closeMode) || DEFAULT_CLOSE_MODE;
+};
+
+var getMenuMode = function getMenuMode(target) {
+  return target.getAttribute(config.attr.menuMode) || DEFAULT_MENU_MODE;
 };
 
 // ----------------------------------
@@ -724,10 +752,10 @@ var getCloseMode = function getCloseMode(target) {
 // ----------------------------------
 
 var getCloseHandler = function getCloseHandler(toggle, target) {
-    return function () {
-        toggle.close();
-        target.close();
-    };
+  return function () {
+    toggle.close();
+    target.close();
+  };
 };
 
 // ----------------------------------
@@ -735,111 +763,121 @@ var getCloseHandler = function getCloseHandler(toggle, target) {
 // ----------------------------------
 
 var mountTarget = function mountTarget(element, closeMode) {
-    return {
-        open: function open() {
-            setOpeningClasses(element);
+  return {
+    open: function open() {
+      setOpeningClasses(element);
 
-            // accessibility actions
-            element.focus();
-        },
-        close: function close() {
-            setClosingClasses(element);
-        },
-        bindEvents: function bindEvents() {
-            if (closeMode === CLOSE_MODE.outside) {
-                var onClickTarget = function onClickTarget(event) {
-                    event.stopPropagation();
-                }; // eat the event - nom nom
-                attachListeners(element, onClickTarget);
-                attachListeners(element, getKeypressHandler([KEYS.space, KEYS.enter], onClickTarget), config.events.key);
-            }
-        }
-    };
+      // accessibility actions
+      element.focus();
+    },
+    close: function close() {
+      setClosingClasses(element);
+    },
+    bindEvents: function bindEvents() {
+      if (closeMode === CLOSE_MODE.outside) {
+        var onClickTarget = function onClickTarget(event) {
+          event.stopPropagation();
+        }; // eat the event - nom nom
+        attachListeners(element, onClickTarget);
+        attachListeners(element, getKeypressHandler([KEYS.space, KEYS.enter], onClickTarget), config.events.key);
+      }
+    }
+  };
 };
 
 var mountToggle = function mountToggle(element, target, closeMode) {
-    var closeArea = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var closeArea = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var isMenu = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
-    var groupName = getGroupName(element);
+  var groupName = getGroupName(element);
 
-    initAriaAttributes(element);
+  initAriaAttributesToggle(element, isMenu);
+  if (closeArea) {
+    initAriaAttributesToggle(closeArea); // treat close button as another toggle
+  }
 
-    return {
-        element: element,
-        open: function open() {
-            setOpeningClasses(element);
-            target.open();
+  return {
+    element: element,
+    open: function open() {
+      setOpeningClasses(element);
+      target.open();
 
-            // bind close events
-            if (closeMode !== CLOSE_MODE.manual) {
-                // needs to happen after event propagation
-                attachListenersInNextTick(document.body, this.closeHandler);
-                attachListenersInNextTick(document.body, this.keyboardCloseOutsideHandler, config.events.key);
-            }
-            attachListeners(document.body, this.keyboardCloseHandler, config.events.key);
+      // bind close events
+      if (closeMode !== CLOSE_MODE.manual) {
+        // needs to happen after event propagation
+        attachListenersInNextTick(document.body, this.closeHandler);
+        attachListenersInNextTick(document.body, this.keyboardCloseOutsideHandler, config.events.key);
+      }
+      attachListeners(document.body, this.keyboardCloseHandler, config.events.key);
 
-            // accessibility actions
-            setAriaExpanded(element, true);
-        },
+      // accessibility actions
+      setAriaExpanded(element, true);
+      if (closeArea) {
+        setAriaExpanded(closeArea, true);
+      }
+    },
 
 
-        // methods
-        close: function close() {
-            setClosingClasses(element);
-            target.close();
+    // methods
+    close: function close() {
+      setClosingClasses(element);
+      target.close();
 
-            // unbind close events
-            removeListeners(document.body, this.closeHandler);
-            removeListeners(document.body, this.keyboardCloseHandler, config.events.key);
-            removeListeners(document.body, this.keyboardCloseOutsideHandler, config.events.key);
+      // unbind close events
+      removeListeners(document.body, this.closeHandler);
+      removeListeners(document.body, this.keyboardCloseHandler, config.events.key);
+      removeListeners(document.body, this.keyboardCloseOutsideHandler, config.events.key);
 
-            // accessibility actions
-            setAriaExpanded(element, false);
-        },
-        onToggle: function onToggle() {
-            if (isOpen(element)) {
-                this.close();
-                return;
-            }
-            if (closeMode === CLOSE_MODE.group && hasActiveSiblingsToggles(groupName)) {
-                // apply opening classes to toggle straight away so it looks like somethings happening
-                element.classList.add(config.classes.opening);
-                click(element.parentElement); // continue event propagation
-                // open in a bit to let siblings close
-                setTimeout(this.open.bind(this), config.animations.siblingOpenDelay);
-                return;
-            }
-            this.open();
-        },
-        bindEvents: function bindEvents(closeHandler) {
-            var _this = this;
+      // accessibility actions
+      setAriaExpanded(element, false);
+      if (closeArea) {
+        setAriaExpanded(closeArea, false);
+      }
+    },
+    onToggle: function onToggle() {
+      if (isOpen(element)) {
+        this.close();
+        return;
+      }
+      if (closeMode === CLOSE_MODE.group && hasActiveSiblingsToggles(groupName)) {
+        // apply opening classes to toggle straight away so it looks like somethings happening
+        element.classList.add(config.classes.opening);
+        click(element.parentElement); // continue event propagation
+        // open in a bit to let siblings close
+        setTimeout(this.open.bind(this), config.animations.siblingOpenDelay);
+        return;
+      }
+      this.open();
+    },
+    bindEvents: function bindEvents(closeHandler) {
+      var _this = this;
 
-            this.closeHandler = closeHandler;
-            this.keyboardCloseHandler = getKeypressHandler([KEYS.escape], function () {
-                closeHandler();
-                element.focus();
-            });
-            this.keyboardCloseOutsideHandler = getKeypressHandler([KEYS.enter, KEYS.space], function () {
-                closeHandler();
-                element.focus();
-            });
-            attachListeners(element, this.onToggle.bind(this));
-            attachKeyListeners(element, [KEYS.enter, KEYS.space, KEYS.down, KEYS.up], this.onToggle.bind(this));
+      this.closeHandler = closeHandler;
+      this.keyboardCloseHandler = getKeypressHandler([KEYS.escape], function () {
+        closeHandler();
+        element.focus();
+      });
+      this.keyboardCloseOutsideHandler = getKeypressHandler([KEYS.enter, KEYS.space], function () {
+        closeHandler();
+        element.focus();
+      });
+      attachListeners(element, this.onToggle.bind(this));
+      attachKeyListeners(element, [KEYS.enter, KEYS.space, KEYS.down, KEYS.up], this.onToggle.bind(this));
 
-            target.bindEvents(closeHandler);
+      target.bindEvents(closeHandler);
 
-            if (closeArea) {
-                var closeButtonHandler = function closeButtonHandler() {
-                    _this.close();
-                    click(element.parentElement); // continue event propagation
-                };
+      if (closeArea) {
+        var closeButtonHandler = function closeButtonHandler() {
+          _this.close();
+          click(element.parentElement); // continue event propagation
+        };
 
-                attachListeners(closeArea, closeButtonHandler);
+        attachListeners(closeArea, closeButtonHandler);
 
-                attachKeyListeners(closeArea, [KEYS.enter, KEYS.space, KEYS.escape], closeButtonHandler);
-            }
-        }
-    };
+        attachKeyListeners(closeArea, [KEYS.enter, KEYS.space, KEYS.escape], closeButtonHandler);
+      }
+    }
+  };
 };
 
 // ----------------------------------
@@ -847,26 +885,27 @@ var mountToggle = function mountToggle(element, target, closeMode) {
 // ----------------------------------
 
 var createToggle = function createToggle(element) {
-    // get sub components
-    var targetElement = getTargetElement(element);
-    var closeArea = findCloseArea(element);
-    var closeMode = getCloseMode(element);
+  // get sub components
+  var targetElement = getTargetElement(element);
+  var closeArea = findCloseArea(element);
+  var closeMode = getCloseMode(element);
+  var menuMode = getMenuMode(element);
 
-    var target = mountTarget(targetElement, closeMode);
-    var toggle = mountToggle(element, target, closeMode, closeArea);
-    var closeHandler = getCloseHandler(toggle, target);
+  var target = mountTarget(targetElement, closeMode);
+  var toggle = mountToggle(element, target, closeMode, closeArea, menuMode);
+  var closeHandler = getCloseHandler(toggle, target);
 
-    toggle.bindEvents(closeHandler);
+  toggle.bindEvents(closeHandler);
 
-    return toggle;
+  return toggle;
 };
 
 var attachToggles = function attachToggles() {
-    var toggles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getToggleElements();
+  var toggles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getToggleElements();
 
-    if (toggles.length > 0) {
-        toggles.map(createToggle);
-    }
+  if (toggles.length > 0) {
+    toggles.map(createToggle);
+  }
 };
 
 // ----------------------------------
@@ -874,13 +913,13 @@ var attachToggles = function attachToggles() {
 // ----------------------------------
 
 /* harmony default export */ __webpack_exports__["a"] = (function () {
-    var toggles = getToggleElements();
-    if (toggles.length > 0) {
-        attachToggles(toggles); // attach toggle now
-        return;
-    }
-    // attach toggle on load
-    document.addEventListener('DOMContentLoaded', attachToggles);
+  var toggles = getToggleElements();
+  if (toggles.length > 0) {
+    attachToggles(toggles); // attach toggle now
+    return;
+  }
+  // attach toggle on load
+  document.addEventListener('DOMContentLoaded', attachToggles);
 });
 
 /***/ }),

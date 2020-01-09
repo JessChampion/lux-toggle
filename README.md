@@ -16,7 +16,7 @@ CSS will need to be coded to define the display state, as the script only modifi
  
 Any clicks outside the toggle button or target will cause the target to close automatically.
  
-Three other optional attributes can be added to the toggle element to customise its behaviour.
+Four other optional attributes can be added to the toggle element to customise its behaviour.
 
 -   `data-lux-toggle-group` can be set with a string representing the group name.
     Whenever a toggle in a group is opened it will check if there are other siblings open in the group,
@@ -30,9 +30,15 @@ Three other optional attributes can be added to the toggle element to customise 
     -   **group**:    close siblings when another in the same group is opened.
     -   **outside**:  always close on click outside
 
+-   `data-lux-toggle-menu` set `true` , (defaults to false) to indicate that the toggle expands a menu.
+    This adds the extra aria tag `aria-haspopup` which indicates a popup menu to screen readers. 
+    This should only be used where the target is a menu, it may cause accessibility issues 
+
 Accessibility support includes:
     -   Keyboard navigation
+    -   Automatic applications of `tabindex=0` to toggles and close button if not manually specified. 
     -   Automatic application of aria-expanded and aria-controls tags to target and toggles.
+    -   Supports menu mode to set aria-haspopup on menus
  
 ## Installation & Usage
 ### Installation
@@ -109,6 +115,4 @@ The specs are located in `/test` and can be run with `yarn test`
 Test coverage can be reported by running `yarn test:coverage`
 
 ### Enhancement Backlog
-- Automatically add tab-index to toggle if needed.
-- Test edge cases of nested toggles
 - Make config actually configurable 
