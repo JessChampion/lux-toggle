@@ -110,4 +110,5 @@ Test coverage can be reported by running `yarn test:coverage`
 
 ### Enhancement Backlog
 - Automatically add tab-index to toggle if needed.
+- Test edge cases of nested toggles
 - Make config actually configurable 
