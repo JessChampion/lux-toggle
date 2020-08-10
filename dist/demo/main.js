@@ -627,11 +627,10 @@ var setTabIndexIfUnset = function setTabIndexIfUnset(target) {
   return setTabIndex(target);
 };
 
-var initAriaAttributesToggle = function initAriaAttributesToggle(toggleButton) {
-  var isMenu = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+var initAriaAttributesToggle = function initAriaAttributesToggle(toggleButton, targetID) {
+  var isMenu = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
   setAriaExpanded(toggleButton, false);
-  var targetID = toggleButton.getAttribute(config.attr.target);
   toggleButton.setAttribute('aria-controls', targetID);
   setTabIndexIfUnset(toggleButton);
   if (isMenu) {
@@ -791,9 +790,11 @@ var mountToggle = function mountToggle(element, target, closeMode) {
 
   var groupName = getGroupName(element);
 
-  initAriaAttributesToggle(element, isMenu);
+  var targetID = element.getAttribute(config.attr.target);
+  initAriaAttributesToggle(element, targetID, isMenu);
+
   if (closeArea) {
-    initAriaAttributesToggle(closeArea, isMenu); // treat close button as another toggle
+    initAriaAttributesToggle(closeArea, targetID, isMenu); // treat close button as another toggle
   }
 
   return {

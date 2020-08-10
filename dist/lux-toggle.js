@@ -123,9 +123,8 @@ const setTabIndexIfUnset = (target) => {
   return setTabIndex(target);
 };
 
-const initAriaAttributesToggle = (toggleButton, isMenu = false) => {
+const initAriaAttributesToggle = (toggleButton, targetID, isMenu = false) => {
   setAriaExpanded(toggleButton, false);
-  const targetID = toggleButton.getAttribute(config.attr.target);
   toggleButton.setAttribute('aria-controls', targetID);
   setTabIndexIfUnset(toggleButton);
   if (isMenu) {
@@ -261,9 +260,11 @@ const mountTarget = (element, closeMode) => ({
 const mountToggle = (element, target, closeMode, closeArea = null, isMenu = false) => {
   const groupName = getGroupName(element);
 
-  initAriaAttributesToggle(element, isMenu);
+  const targetID = element.getAttribute(config.attr.target);
+  initAriaAttributesToggle(element, targetID, isMenu);
+
   if (closeArea) {
-    initAriaAttributesToggle(closeArea, isMenu); // treat close button as another toggle
+    initAriaAttributesToggle(closeArea, targetID, isMenu); // treat close button as another toggle
   }
 
   return {

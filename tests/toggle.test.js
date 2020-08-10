@@ -140,7 +140,6 @@ describe('toggle', () => {
       ]])
         .pop();
 
-      const target = document.getElementById(targetId);
       const closeButton = document.getElementById(`close-${targetId}`);
 
       jest.runAllTimers();
@@ -148,16 +147,16 @@ describe('toggle', () => {
       expect(toggle.getAttribute('aria-controls'))
         .toBe(targetId);
       expect(toggle.getAttribute('aria-expanded'))
-        .toBe(false);
-      expect(toggle.getAttribute('tabindex'))
+        .toBe('false');
+      expect(parseInt(toggle.getAttribute('tabindex'), 10))
         .toBe(0);
 
 
       expect(closeButton.getAttribute('aria-controls'))
         .toBe(targetId);
       expect(closeButton.getAttribute('aria-expanded'))
-        .toBe(false);
-      expect(closeButton.getAttribute('tabindex'))
+        .toBe('false');
+      expect(parseInt(closeButton.getAttribute('tabindex'), 10))
         .toBe(0);
     });
   });
